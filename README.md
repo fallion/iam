@@ -71,11 +71,6 @@ The following structure is expected:
 - Commit messages should be at most 72 characters long.
 - Commit messages should start with the scope of the changes introduced by the commit.
 
-## Contributing to documentation
-
-Run `make install_hugo` to install hugo, and `make docs/serve` to launch the
-hugo server for development.
-
 ## Troubleshooting
 
 ### It cannot find go or some packages when executing some make commands

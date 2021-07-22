@@ -74,4 +74,3 @@ swagger-serve:
 	swagger serve ./api/swagger.yml
 
 -include ./tests/e2e/e2e.mk
--include ./www/docs.mk

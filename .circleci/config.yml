@@ -67,26 +67,6 @@ jobs:
                -F "variables[CI_COMMIT_SHA]=$CIRCLE_SHA1" \
                https://gitlab.skypicker.com/api/v4/projects/1680/trigger/pipeline
 
-  publish/docs:
-    docker:
-      - image: commitsar/hugo:0.58.3
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            cd www
-            npm i
-      - run:
-          name: Set author of the commit
-          command: |
-            git config user.email "ci-build@kiwi.com"
-            git config user.name "ci-build"
-      - add_ssh_keys:
-          fingerprints:
-            - "9c:b5:0a:f1:d1:6f:49:34:d3:81:10:81:cd:cc:6c:d5"
-      - run: make docs/publish
-
 workflows:
   version: 2
   build:
@@ -103,12 +83,11 @@ workflows:
       - e2e-tests/nocache: *ignore-master
   deploy:
     jobs:
-      - publish/docs: &only-master
+      - deploy/sandbox:
           filters:
             branches:
               only:
                 - master
-      - deploy/sandbox: *only-master
       - deploy/production:
           filters:
             tags:
