@@ -104,7 +104,7 @@ var defaultValues = map[string]interface{}{
 	"REDIS_HOST":             "localhost",
 	"REDIS_PORT":             "6379",
 	"REDIS_LOCK_RETRY_DELAY": "1s",
-	"REDIS_LOCK_EXPIRATION":  "5s",
+	"REDIS_LOCK_EXPIRATION":  "10m",
 	"SENTRY_DSN":             "",
 	// The SENTRY_RELEASE value should NEVER be set manually. It's generated during docker build,
 	// and it's used to track the version of the app. Useful for user agent
