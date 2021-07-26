@@ -91,7 +91,7 @@ func (c *Client) getUserGroups(user *User) ([]Group, error) {
 	// Deduplicate network calls and cache writes if this function is called
 	// multiple times within the same instance.
 	val, err, _ := c.group.Do(lockName, func() (interface{}, error) {
-		lockErr := c.lock.Create(lockName)
+		lockErr := c.lock.Create(lockName, 5 * time.Second)
 		if lockErr == storage.ErrLockExists {
 			// If there was a lock, it means another instance was fetching this data
 			// recently, in that case, we should be able to just get the data from

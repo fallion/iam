@@ -56,7 +56,6 @@ func newMocks() (*mockCache, *LockManager) {
 	lock := &LockManager{
 		cache:      cache,
 		retryDelay: 10 * time.Millisecond,
-		expiration: 100 * time.Millisecond,
 	}
 
 	return cache, lock
@@ -66,14 +65,14 @@ func TestCreate(t *testing.T) {
 	cache, lock := newMocks()
 
 	// Create lock successfully
-	err := lock.Create("test")
+	err := lock.Create("test", 100 * time.Millisecond)
 	assert.Nil(t, err)
 	_, ok := cache.data["lock:test"]
 	assert.Equal(t, true, ok)
 
 	// Creating a second lock should throw an error, because we already have an
 	// existing lock.
-	err = lock.Create("test")
+	err = lock.Create("test", 100 * time.Millisecond)
 	assert.Equal(t, ErrLockExists, err)
 
 	// After failing to create a lock, there should be no lock left. Since
@@ -86,7 +85,7 @@ func TestDelete(t *testing.T) {
 	cache, lock := newMocks()
 
 	// Create lock successfully
-	err := lock.Create("test")
+	err := lock.Create("test", 100 * time.Millisecond)
 	assert.Nil(t, err)
 	_, ok := cache.data["lock:test"]
 	assert.Equal(t, true, ok)

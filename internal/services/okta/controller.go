@@ -72,7 +72,7 @@ func (c *Client) GetUser(email string) (User, error) {
 	// Deduplicate network calls and cache writes if this controller is called
 	// multiple times concurrently.
 	val, err, _ := c.group.Do(email, func() (interface{}, error) {
-		lockErr := c.lock.Create(email)
+		lockErr := c.lock.Create(email, 5 * time.Second)
 		if lockErr == storage.ErrLockExists {
 			// If there was a lock for this user, it means another instance was
 			// fetching its data recently, in that case we should be able to just get
@@ -163,7 +163,7 @@ func (c *Client) GetGroups() ([]Group, error) {
 
 // SyncUsers gets all users from Okta and saves them into cache.
 func (c *Client) SyncUsers() {
-	lockErr := c.lock.Create("sync_users")
+	lockErr := c.lock.Create("sync_users", 5 * time.Minute)
 	if lockErr == storage.ErrLockExists {
 		log.Println("Aborted, users were already fetched")
 
@@ -201,7 +201,7 @@ func (c *Client) SyncUsers() {
 
 // SyncGroups gets all groups from Okta and saves them into cache.
 func (c *Client) SyncGroups() {
-	lockErr := c.lock.Create("sync_groups")
+	lockErr := c.lock.Create("sync_groups", 10 * time.Minute)
 	if lockErr == storage.ErrLockExists {
 		log.Println("Aborted, groups were already fetched")
 

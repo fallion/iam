@@ -184,7 +184,6 @@ func main() {
 	lock := storage.NewLockManager(
 		cache,
 		storageConfig.LockRetryDelay,
-		storageConfig.LockExpiration,
 	)
 	oktaToken, _ := secretManager.GetSetting("OKTA_TOKEN")
 	oktaClient := okta.NewClient(&okta.ClientOpts{

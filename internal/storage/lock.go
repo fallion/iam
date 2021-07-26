@@ -18,15 +18,13 @@ type cache interface {
 type LockManager struct {
 	cache      cache
 	retryDelay time.Duration
-	expiration time.Duration
 }
 
 // NewLockManager initializes and returns a LockManager for Redis.
-func NewLockManager(cache cache, retryDelay, expiration time.Duration) *LockManager {
+func NewLockManager(cache cache, retryDelay time.Duration) *LockManager {
 	return &LockManager{
 		cache:      cache,
 		retryDelay: retryDelay,
-		expiration: expiration,
 	}
 }
 
@@ -38,7 +36,7 @@ var ErrLockExists = errors.New("lock was not created because one was already pre
 // doing an expensive action at the same time. If a lock already exists,
 // the function will not create one, it will wait until the existing one is
 // deleted or expired before returning ErrLockExists.
-func (l *LockManager) Create(name string) error {
+func (l *LockManager) Create(name string, expiration time.Duration) error {
 	var lock time.Time
 	var exists bool
 	key := "lock:" + name
@@ -60,7 +58,7 @@ func (l *LockManager) Create(name string) error {
 	}
 
 	lock = time.Now()
-	err = l.cache.Set(key, lock, l.expiration)
+	err = l.cache.Set(key, lock, expiration)
 	if err != nil {
 		err = errors.Wrap(err, "error creating lock")
 		raven.CaptureError(err, nil)
