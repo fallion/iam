@@ -21,6 +21,30 @@ func (s LocalSecretManager) DoesTokenExist(reqToken string) bool {
 	return reqToken == token
 }
 
+// IsGoogleIDInList checks for a presence of google_id (email) in the allowlist
+func (s LocalSecretManager) IsGoogleIDInList(email string) bool {
+	googleAllowlistVar := "GOOGLEID_ALLOWLIST"
+	googleIDAllowedList := viper.GetStringSlice(googleAllowlistVar)
+	for _, val := range googleIDAllowedList {
+		if val == email {
+			return true
+		}
+	}
+	return false
+}
+
+// IsGitlabClaimInList checks for a presence of tuple of proj_id/branch in the allowlist
+func (s LocalSecretManager) IsGitlabClaimInList(claim string) bool {
+	gitlabAllowlistVar := "GITLABCLAIM_ALLOWLIST"
+	gitlabClaimAllowedList := viper.GetStringSlice(gitlabAllowlistVar)
+	for _, val := range gitlabClaimAllowedList {
+		if val == claim {
+			return true
+		}
+	}
+	return false
+}
+
 // GetSetting gets a setting from Viper.
 func (s LocalSecretManager) GetSetting(key string) (string, error) {
 	setting := viper.GetString(key)

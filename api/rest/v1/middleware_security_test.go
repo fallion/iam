@@ -22,6 +22,14 @@ func (s *mockedSecretManager) GetSetting(_ string) (string, error) {
 	return "", nil
 }
 
+func (s *mockedSecretManager) IsGoogleIDInList(_ string) bool {
+	return true
+}
+
+func (s *mockedSecretManager) IsGitlabClaimInList(_ string) bool {
+	return true
+}
+
 func createFakeManager() secrets.SecretManager {
 	return &mockedSecretManager{}
 }

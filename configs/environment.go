@@ -82,7 +82,9 @@ type SentryConfig struct {
 
 // SecretsConfig stores configuration values for S2S authentication handling.
 type SecretsConfig struct {
-	Path string `mapstructure:"SECRETS_PATH"`
+	Path              string   `mapstructure:"SECRETS_PATH"`
+	GoogleIDAllowlist []string `mapstructure:"GOOGLEID_ALLOWLIST"`
+	Audience          string   `mapstructure:"AUDIENCE"`
 }
 
 var defaultValues = map[string]interface{}{
@@ -112,4 +114,11 @@ var defaultValues = map[string]interface{}{
 	"DATADOG_ADDR":  "",
 	"DD_AGENT_HOST": "",
 	"SECRETS_PATH":  "/etc/vault/secrets.json",
+	// list of SA Emails separated by spaces, won't work otherwise
+	// https://github.com/spf13/viper/issues/380
+	"GOOGLEID_ALLOWLIST": "",
+	// list of claims (projID/branch) separated by spaces, won't work otherwise
+	// https://github.com/spf13/viper/issues/380
+	"GITLABCLAIM_ALLOWLIST": "",
+	"AUDIENCE":              "",
 }

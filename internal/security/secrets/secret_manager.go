@@ -4,4 +4,6 @@ package secrets
 type SecretManager interface {
 	DoesTokenExist(string) bool
 	GetSetting(string) (string, error)
+	IsGoogleIDInList(string) bool
+	IsGitlabClaimInList(string) bool
 }

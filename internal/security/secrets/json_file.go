@@ -15,6 +15,8 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 type Secrets struct {
 	Settings     map[string]string            `json:"settings"`
 	TokenMap     map[string]map[string]string `json:"tokens"`
+	GoogleIDs    []string                     `json:"google_ids"`
+	GitlabClaims []string                     `json:"gitlab_claims"`
 }
 
 // JSONFileManager holds a local copy of all secrets (settings & S2S tokens).
@@ -22,6 +24,8 @@ type JSONFileManager struct {
 	paths        []string
 	settings     map[string]string
 	tokens       map[string]bool
+	googleIds    map[string]bool
+	gitlabClaims map[string]bool
 }
 
 // CreateNewJSONFileManager creates a new secret manager hooked up to Viper.
@@ -40,6 +44,8 @@ func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
 		paths:        paths,
 		settings:     nil,
 		tokens:       make(map[string]bool),
+		googleIds:    make(map[string]bool),
+		gitlabClaims: make(map[string]bool),
 	}, nil
 }
 
@@ -67,15 +73,18 @@ func (s *JSONFileManager) SyncSecrets() error {
 			s.settings = secrets.Settings
 		} else {
 			for k, v := range secrets.Settings {
-				if s.settings[k] != v {
-					log.Printf("[WARN] Overriding setting %s value %s with %s!", k, s.settings[k], v)
-				}
 				s.settings[k] = v
 			}
 		}
+		for gid := range secrets.GoogleIDs {
+			s.googleIds[secrets.GoogleIDs[gid]] = true
+		}
+		for gc := range secrets.GitlabClaims {
+			s.gitlabClaims[secrets.GitlabClaims[gc]] = true
+		}
 
 	}
-	log.Printf("Synced %v settings and %v tokens.", len(s.settings), len(s.tokens))
+	log.Printf("Synced %v settings, %v tokens, %v Google IDs and %v GitLab claims.", len(s.settings), len(s.tokens), len(s.googleIds), len(s.gitlabClaims))
 	return nil
 }
 
@@ -84,6 +93,15 @@ func (s JSONFileManager) DoesTokenExist(reqToken string) bool {
 	return s.tokens[reqToken]
 }
 
+// IsGoogleIDInList checks for a presence of google_id (email) in the allowlist
+func (s JSONFileManager) IsGoogleIDInList(email string) bool {
+	return s.googleIds[email]
+}
+
+// IsGitlabClaimInList checks for a presence of tuple of proj_id/branch in the allowlist
+func (s JSONFileManager) IsGitlabClaimInList(claim string) bool {
+	return s.gitlabClaims[claim]
+}
 
 // GetSetting gets a setting from the secret manager.
 func (s JSONFileManager) GetSetting(key string) (string, error) {
