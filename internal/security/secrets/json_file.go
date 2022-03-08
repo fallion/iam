@@ -18,14 +18,14 @@ type Secrets struct {
 
 // JSONFileManager holds a local copy of all secrets (settings & S2S tokens).
 type JSONFileManager struct {
-	raw      []byte
+	path     string
 	settings map[string]string
 	tokens   map[string]bool
 }
 
 // CreateNewJSONFileManager creates a new secret manager hooked up to Viper.
 func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
-	data, err := ioutil.ReadFile(path)
+	_, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
 	log.Println("Using JSON secret file at:", path)
 
 	return &JSONFileManager{
-		raw:      data,
+		path:     path,
 		settings: nil,
 		tokens:   nil,
 	}, nil
@@ -42,8 +42,12 @@ func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
 // SyncSecrets syncs all the available tokens from env and saves them to local state.
 func (s *JSONFileManager) SyncSecrets() error {
 	var secrets Secrets
+	data, err := ioutil.ReadFile(s.path)
+	if err != nil {
+		return err
+	}
 
-	if err := json.Unmarshal(s.raw, &secrets); err != nil {
+	if err := json.Unmarshal(data, &secrets); err != nil {
 		return err
 	}
 
