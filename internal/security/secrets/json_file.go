@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
+	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -12,60 +13,69 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Secrets represents the JSON file structure.
 type Secrets struct {
-	Settings map[string]string            `json:"settings"`
-	TokenMap map[string]map[string]string `json:"tokens"`
+	Settings     map[string]string            `json:"settings"`
+	TokenMap     map[string]map[string]string `json:"tokens"`
 }
 
 // JSONFileManager holds a local copy of all secrets (settings & S2S tokens).
 type JSONFileManager struct {
-	path     string
-	settings map[string]string
-	tokens   map[string]bool
+	paths        []string
+	settings     map[string]string
+	tokens       map[string]bool
 }
 
 // CreateNewJSONFileManager creates a new secret manager hooked up to Viper.
 func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
-	_, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
+	paths := strings.Split(path, ":")
+	// try if you can read the file, if not, return err.
+	for _, p := range paths {
+		_, err := ioutil.ReadFile(p)
+		if err != nil {
+			return nil, err
+		}
+		log.Println("Using JSON secret file at:", p)
 	}
 
-	log.Println("Using JSON secret file at:", path)
-
 	return &JSONFileManager{
-		path:     path,
-		settings: nil,
-		tokens:   nil,
+		paths:        paths,
+		settings:     nil,
+		tokens:       make(map[string]bool),
 	}, nil
 }
 
 // SyncSecrets syncs all the available tokens from env and saves them to local state.
 func (s *JSONFileManager) SyncSecrets() error {
-	var secrets Secrets
-	data, err := ioutil.ReadFile(s.path)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(data, &secrets); err != nil {
-		return err
-	}
-
-	s.settings = secrets.Settings
-
-	mappedTokens := make(map[string]bool)
-	tokenCount := 0
-
-	for _, app := range secrets.TokenMap {
-		for _, token := range app {
-			tokenCount++
-			mappedTokens[token] = true
+	// read the files again to actually sync stuff
+	for _, path := range s.paths {
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
 		}
+		var secrets Secrets
+
+		if err := json.Unmarshal(data, &secrets); err != nil {
+			return err
+		}
+
+		for _, app := range secrets.TokenMap {
+			for _, token := range app {
+				s.tokens[token] = true
+			}
+		}
+
+		if s.settings == nil {
+			s.settings = secrets.Settings
+		} else {
+			for k, v := range secrets.Settings {
+				if s.settings[k] != v {
+					log.Printf("[WARN] Overriding setting %s value %s with %s!", k, s.settings[k], v)
+				}
+				s.settings[k] = v
+			}
+		}
+
 	}
-	s.tokens = mappedTokens
-
-	log.Printf("Synced %v settings and %v tokens (%v unique).", len(s.settings), tokenCount, len(s.tokens))
-
+	log.Printf("Synced %v settings and %v tokens.", len(s.settings), len(s.tokens))
 	return nil
 }
 
@@ -73,6 +83,7 @@ func (s *JSONFileManager) SyncSecrets() error {
 func (s JSONFileManager) DoesTokenExist(reqToken string) bool {
 	return s.tokens[reqToken]
 }
+
 
 // GetSetting gets a setting from the secret manager.
 func (s JSONFileManager) GetSetting(key string) (string, error) {
