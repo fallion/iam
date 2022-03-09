@@ -25,12 +25,12 @@ func StrToTempFile(contents string) (string, error) {
 }
 
 func TestJSONSyncSecrets(t *testing.T) {
-	file_one, err := StrToTempFile(`{"settings":{"LABEL":"thisisatoken"},"tokens":{"token":{"access":"thisisatoken"}},"google_ids":["asdf@asdfasdf.cz"], "gitlab_claims":["4247/master"]}`)
+	fileOne, err := StrToTempFile(`{"settings":{"LABEL":"thisisatoken"},"tokens":{"token":{"access":"thisisatoken"}},"google_ids":["asdf@asdfasdf.cz"], "gitlab_claims":["4247/master"]}`)
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
-	fm, err := CreateNewJSONFileManager(file_one)
+	defer os.Remove(fileOne)
+	fm, err := CreateNewJSONFileManager(fileOne)
 	fm.SyncSecrets()
 	assert.NoError(t, err)
 	exp, err := fm.GetSetting("LABEL")
@@ -41,13 +41,13 @@ func TestJSONSyncSecrets(t *testing.T) {
 	assert.Equal(t, true, fm.IsGitlabClaimInList("4247/master"))
 
 	// add new secrets
-	new_str := `{"settings":{"LABEL":"thisisatoken", "LABEL2":"alsotoken"},"tokens":{"token":{"access":"thisisatoken", "access2":"alsotoken"}},"google_ids":["asdf@asdfasdf.cz", "temp"], "gitlab_claims":["4247/master", "42/temp"]}`
-	ioutil.WriteFile(file_one, []byte(new_str), 0644)
+	newStr := `{"settings":{"LABEL":"thisisatoken", "LABEL2":"alsotoken"},"tokens":{"token":{"access":"thisisatoken", "access2":"alsotoken"}},"google_ids":["asdf@asdfasdf.cz", "temp"], "gitlab_claims":["4247/master", "42/temp"]}`
+	ioutil.WriteFile(fileOne, []byte(newStr), 0644)
 	fm.SyncSecrets()
 	exp, err = fm.GetSetting("LABEL")
 	assert.Equal(t, "thisisatoken", exp)
 	assert.NoError(t, err)
-	exp, err = fm.GetSetting("LABEL")
+	exp, err = fm.GetSetting("LABEL2")
 	assert.Equal(t, "alsotoken", exp)
 	assert.NoError(t, err)
 	assert.Equal(t, true, fm.DoesTokenExist("thisisatoken"))
@@ -58,13 +58,13 @@ func TestJSONSyncSecrets(t *testing.T) {
 	assert.Equal(t, true, fm.IsGitlabClaimInList("42/temp"))
 
 	// remove secrets
-	rem_str := `{"settings":{"LABEL":"thisisatoken"},"tokens":{"token":{"access":"thisisatoken"}},"google_ids":["asdf@asdfasdf.cz"], "gitlab_claims":["4247/master"]}`
-	ioutil.WriteFile(file_one, []byte(rem_str), 0644)
+	remStr := `{"settings":{"LABEL":"thisisatoken"},"tokens":{"token":{"access":"thisisatoken"}},"google_ids":["asdf@asdfasdf.cz"], "gitlab_claims":["4247/master"]}`
+	ioutil.WriteFile(fileOne, []byte(remStr), 0644)
 	fm.SyncSecrets()
 	exp, err = fm.GetSetting("LABEL")
 	assert.Equal(t, "thisisatoken", exp)
 	assert.NoError(t, err)
-	exp, err = fm.GetSetting("LABEL")
+	exp, err = fm.GetSetting("LABEL2")
 	assert.Error(t, err)
 	assert.Equal(t, true, fm.DoesTokenExist("thisisatoken"))
 	assert.Equal(t, false, fm.DoesTokenExist("alsotoken"))
@@ -75,40 +75,40 @@ func TestJSONSyncSecrets(t *testing.T) {
 }
 
 func TestCreateNewJSONFileManager(t *testing.T) {
-	file_one, err := StrToTempFile("{}")
+	fileOne, err := StrToTempFile("{}")
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
-	file_two, err := StrToTempFile("{}")
+	defer os.Remove(fileOne)
+	fileTwo, err := StrToTempFile("{}")
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_two)
-	tests_happy := map[string][]string{
-		file_one: []string{file_one},
-		strings.Join([]string{file_one, file_two}, ":"): []string{file_one, file_two},
+	defer os.Remove(fileTwo)
+	testsHappy := map[string][]string{
+		fileOne: []string{fileOne},
+		strings.Join([]string{fileOne, fileTwo}, ":"): []string{fileOne, fileTwo},
 	}
-	for test, expected := range tests_happy {
+	for test, expected := range testsHappy {
 		fm, err := CreateNewJSONFileManager(test)
 		assert.Equal(t, expected, fm.paths)
 		assert.NoError(t, err)
 	}
 
-	tests_error := []string{"non-existent-file.what"}
-	for test := range tests_error {
-		_, err := CreateNewJSONFileManager(tests_error[test])
+	testsError := []string{"non-existent-file.what"}
+	for test := range testsError {
+		_, err := CreateNewJSONFileManager(testsError[test])
 		assert.Error(t, err)
 	}
 
 }
 
 func TestJSONDoesTokenExist(t *testing.T) {
-	file_one, err := StrToTempFile(`{"tokens": {"app1": {"access1":"tokenval1", "access2":"tokenval2"}, "app2": {"access3":"tokenval3"}}}`)
+	fileOne, err := StrToTempFile(`{"tokens": {"app1": {"access1":"tokenval1", "access2":"tokenval2"}, "app2": {"access3":"tokenval3"}}}`)
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
+	defer os.Remove(fileOne)
 
 	tests := map[string]bool{
 		"tokenval1": true,
@@ -116,7 +116,7 @@ func TestJSONDoesTokenExist(t *testing.T) {
 		"tokenval3": true,
 		"tokenval4": false,
 	}
-	fm, err := CreateNewJSONFileManager(file_one)
+	fm, err := CreateNewJSONFileManager(fileOne)
 	fm.SyncSecrets()
 	assert.NoError(t, err)
 	for test, expected := range tests {
@@ -124,18 +124,18 @@ func TestJSONDoesTokenExist(t *testing.T) {
 	}
 }
 func TestJSONIsGoogleIDInList(t *testing.T) {
-	file_one, err := StrToTempFile(`{"google_ids": ["email1@gserviceaccount.com", "email2@gserviceaccount.com"]}`)
+	fileOne, err := StrToTempFile(`{"google_ids": ["email1@gserviceaccount.com", "email2@gserviceaccount.com"]}`)
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
+	defer os.Remove(fileOne)
 
 	tests := map[string]bool{
 		"email1@gserviceaccount.com": true,
 		"email2@gserviceaccount.com": true,
 		"email3@gserviceaccount.com": false,
 	}
-	fm, err := CreateNewJSONFileManager(file_one)
+	fm, err := CreateNewJSONFileManager(fileOne)
 	fm.SyncSecrets()
 	assert.NoError(t, err)
 	for test, expected := range tests {
@@ -143,11 +143,11 @@ func TestJSONIsGoogleIDInList(t *testing.T) {
 	}
 }
 func TestJSONIsGitlabClaimInList(t *testing.T) {
-	file_one, err := StrToTempFile(`{"gitlab_claims": ["1/master", "2/master", "3/not-master"]}`)
+	fileOne, err := StrToTempFile(`{"gitlab_claims": ["1/master", "2/master", "3/not-master"]}`)
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
+	defer os.Remove(fileOne)
 
 	tests := map[string]bool{
 		"1/master":     true,
@@ -157,7 +157,7 @@ func TestJSONIsGitlabClaimInList(t *testing.T) {
 		"4/master":     false,
 		"2/not-master": false,
 	}
-	fm, err := CreateNewJSONFileManager(file_one)
+	fm, err := CreateNewJSONFileManager(fileOne)
 	fm.SyncSecrets()
 	assert.NoError(t, err)
 	for test, expected := range tests {
@@ -165,30 +165,30 @@ func TestJSONIsGitlabClaimInList(t *testing.T) {
 	}
 }
 func TestJSONGetSetting(t *testing.T) {
-	file_one, err := StrToTempFile(`{"settings":{"label1":"setting1", "label2":"setting2"}}`)
+	fileOne, err := StrToTempFile(`{"settings":{"label1":"setting1", "label2":"setting2"}}`)
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(file_one)
+	defer os.Remove(fileOne)
 
-	tests_happy := map[string]string{
+	testsHappy := map[string]string{
 		"label1": "setting1",
 		"label2": "setting2",
 	}
-	fm, err := CreateNewJSONFileManager(file_one)
+	fm, err := CreateNewJSONFileManager(fileOne)
 	fm.SyncSecrets()
 	assert.NoError(t, err)
-	for test, expected := range tests_happy {
+	for test, expected := range testsHappy {
 		res, err := fm.GetSetting(test)
 		assert.Equal(t, expected, res)
 		assert.NoError(t, err)
 	}
 
-	tests_unhappy := []string{
+	testsError := []string{
 		"label3",
 	}
-	for test := range tests_unhappy {
-		_, err := fm.GetSetting(tests_unhappy[test])
+	for test := range testsError {
+		_, err := fm.GetSetting(testsError[test])
 		assert.Error(t, err)
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func load_configs() {
+func loadConfigs() {
 	cfg.InitEnv()
 
 	var (
@@ -29,7 +29,7 @@ func load_configs() {
 
 func TestLocalDoesTokenExist(t *testing.T) {
 	os.Setenv("TOKEN", "tokenval1")
-	load_configs()
+	loadConfigs()
 	tests := map[string]bool{
 		"tokenval1": true,
 		"tokenval2": false,
@@ -42,7 +42,7 @@ func TestLocalDoesTokenExist(t *testing.T) {
 
 func TestLocalIsGoogleIDInList(t *testing.T) {
 	os.Setenv("GOOGLEID_ALLOWLIST", "email1@gserviceaccount.com email2@gserviceaccount.com")
-	load_configs()
+	loadConfigs()
 	tests := map[string]bool{
 		"email1@gserviceaccount.com": true,
 		"email2@gserviceaccount.com": true,
@@ -56,7 +56,7 @@ func TestLocalIsGoogleIDInList(t *testing.T) {
 
 func TestLocalIsGitlabClaimInList(t *testing.T) {
 	os.Setenv("GITLABCLAIM_ALLOWLIST", "1/master 2/master 3/not-master")
-	load_configs()
+	loadConfigs()
 	tests := map[string]bool{
 		"1/master":     true,
 		"2/master":     true,
@@ -72,26 +72,26 @@ func TestLocalIsGitlabClaimInList(t *testing.T) {
 }
 
 func TestLocalGetSetting(t *testing.T) {
-	tests_happy := map[string]string{
+	testsHappy := map[string]string{
 		"LABEL1": "setting1",
 		"LABEL2": "setting2",
 	}
-	for test, expected := range tests_happy {
+	for test, expected := range testsHappy {
 		os.Setenv(test, expected)
 	}
-	load_configs()
+	loadConfigs()
 	lm := CreateNewLocalSecretManager()
-	for test, expected := range tests_happy {
+	for test, expected := range testsHappy {
 		res, err := lm.GetSetting(test)
 		assert.Equal(t, expected, res)
 		assert.NoError(t, err)
 	}
 
-	tests_unhappy := []string{
+	testsError := []string{
 		"LABEL3",
 	}
-	for test := range tests_unhappy {
-		_, err := lm.GetSetting(tests_unhappy[test])
+	for test := range testsError {
+		_, err := lm.GetSetting(testsError[test])
 		assert.Error(t, err)
 	}
 }

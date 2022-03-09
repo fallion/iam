@@ -43,15 +43,19 @@ func CreateNewJSONFileManager(path string) (*JSONFileManager, error) {
 	return &JSONFileManager{
 		paths:        paths,
 		settings:     nil,
-		tokens:       make(map[string]bool),
-		googleIds:    make(map[string]bool),
-		gitlabClaims: make(map[string]bool),
+		tokens:       nil,
+		googleIds:    nil,
+		gitlabClaims: nil,
 	}, nil
 }
 
 // SyncSecrets syncs all the available tokens from env and saves them to local state.
 func (s *JSONFileManager) SyncSecrets() error {
 	// read the files again to actually sync stuff
+	newSettings := make(map[string]string)
+	newTokens := make(map[string]bool)
+	newGoogleIds := make(map[string]bool)
+	newGitlabClaims := make(map[string]bool)
 	for _, path := range s.paths {
 		data, err := ioutil.ReadFile(path)
 		if err != nil {
@@ -65,25 +69,28 @@ func (s *JSONFileManager) SyncSecrets() error {
 
 		for _, app := range secrets.TokenMap {
 			for _, token := range app {
-				s.tokens[token] = true
+				newTokens[token] = true
 			}
 		}
 
-		if s.settings == nil {
-			s.settings = secrets.Settings
-		} else {
-			for k, v := range secrets.Settings {
-				s.settings[k] = v
+		for k, v := range secrets.Settings {
+			if _, ok := newSettings[k]; ok {
+				log.Printf("[WARN] Overriding setting %s original %s to %s!", k, newSettings[k], v)
 			}
+			newSettings[k] = v
 		}
 		for gid := range secrets.GoogleIDs {
-			s.googleIds[secrets.GoogleIDs[gid]] = true
+			newGoogleIds[secrets.GoogleIDs[gid]] = true
 		}
 		for gc := range secrets.GitlabClaims {
-			s.gitlabClaims[secrets.GitlabClaims[gc]] = true
+			newGitlabClaims[secrets.GitlabClaims[gc]] = true
 		}
 
 	}
+	s.settings = newSettings
+	s.tokens = newTokens
+	s.googleIds = newGoogleIds
+	s.gitlabClaims = newGitlabClaims
 	log.Printf("Synced %v settings, %v tokens, %v Google IDs and %v GitLab claims.", len(s.settings), len(s.tokens), len(s.googleIds), len(s.gitlabClaims))
 	return nil
 }
