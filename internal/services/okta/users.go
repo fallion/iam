@@ -70,7 +70,7 @@ var ErrUserNotFound = errors.New("user not found")
 
 // fetchUser retrieves a user from Okta by email.
 func (c *Client) fetchUser(email string) (User, error) {
-	userURL, err := joinURL(c.baseURL, "/users/", email)
+	userURL, err := joinURL(c.oktaConfig.URL, "/users/", email)
 	if err != nil {
 		return User{}, err
 	}
@@ -114,7 +114,7 @@ func (c *Client) fetchUser(email string) (User, error) {
 func (c *Client) fetchAllUsers() ([]User, error) {
 	var allUsers []User
 
-	url, err := joinURL(c.baseURL, "/users/")
+	url, err := joinURL(c.oktaConfig.URL, "/users/")
 	if err != nil {
 		return nil, err
 	}

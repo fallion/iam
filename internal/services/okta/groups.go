@@ -35,9 +35,9 @@ func (c *Client) fetchGroups(userID, since string) ([]Group, error) {
 	var url string
 	var err error
 	if userID != "" {
-		url, err = joinURL(c.baseURL, "/users/", userID, "/groups/")
+		url, err = joinURL(c.oktaConfig.URL, "/users/", userID, "/groups/")
 	} else {
-		url, err = joinURL(c.baseURL, "/groups/")
+		url, err = joinURL(c.oktaConfig.URL, "/groups/")
 	}
 	if err != nil {
 		return nil, err

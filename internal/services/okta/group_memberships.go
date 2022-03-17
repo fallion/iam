@@ -19,7 +19,7 @@ type GroupMembership struct {
 }
 
 func (c *Client) fetchGroupMembership(groupID string) ([]string, error) {
-	url, err := joinURL(c.baseURL, "/groups/", groupID, "/users")
+	url, err := joinURL(c.oktaConfig.URL, "/groups/", groupID, "/users")
 	if err != nil {
 		return nil, err
 	}

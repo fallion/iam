@@ -187,7 +187,7 @@ func main() {
 	)
 	oktaToken, _ := secretManager.GetSetting("OKTA_TOKEN")
 	oktaClient := okta.NewClient(&okta.ClientOpts{
-		BaseURL:     oktaConfig.URL,
+		OktaConfig:  &oktaConfig,
 		AuthToken:   oktaToken,
 		Cache:       cache,
 		LockManager: lock,

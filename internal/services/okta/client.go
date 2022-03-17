@@ -28,7 +28,7 @@ type Fetcher func(req Request) (*Response, error)
 type ClientOpts struct {
 	Cache         Cacher
 	LockManager   *storage.LockManager
-	BaseURL       string
+	OktaConfig    *cfg.OktaConfig
 	AuthToken     string
 	IAMConfig     *cfg.ServiceConfig
 	Metrics       *monitoring.Metrics
@@ -37,14 +37,14 @@ type ClientOpts struct {
 
 // Client represent an Okta client.
 type Client struct {
-	group     singleflight.Group
-	cache     Cacher
-	lock      *storage.LockManager
-	baseURL   string
-	authToken string
-	iamConfig *cfg.ServiceConfig
-	metrics   *monitoring.Metrics
-	fetch     Fetcher
+	group      singleflight.Group
+	cache      Cacher
+	lock       *storage.LockManager
+	oktaConfig *cfg.OktaConfig
+	authToken  string
+	iamConfig  *cfg.ServiceConfig
+	metrics    *monitoring.Metrics
+	fetch      Fetcher
 }
 
 func getUserAgent(iamConfig *cfg.ServiceConfig) (string, error) {
@@ -79,12 +79,12 @@ func NewClient(opts *ClientOpts) *Client {
 	}
 
 	return &Client{
-		cache:     opts.Cache,
-		lock:      opts.LockManager,
-		baseURL:   opts.BaseURL,
-		authToken: opts.AuthToken,
-		iamConfig: opts.IAMConfig,
-		metrics:   opts.Metrics,
-		fetch:     fetch,
+		cache:      opts.Cache,
+		lock:       opts.LockManager,
+		oktaConfig: opts.OktaConfig,
+		authToken:  opts.AuthToken,
+		iamConfig:  opts.IAMConfig,
+		metrics:    opts.Metrics,
+		fetch:      fetch,
 	}
 }
