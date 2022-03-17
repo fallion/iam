@@ -56,7 +56,8 @@ type ServiceConfig struct {
 
 // OktaConfig stores configuration values for Okta client.
 type OktaConfig struct {
-	URL string `mapstructure:"OKTA_URL"`
+	URL    string `mapstructure:"OKTA_URL"`
+	Filter string `mapstructure:"OKTA_GROUP_FILTER"`
 }
 
 // StorageConfig stores configuration values for storage client.
@@ -102,6 +103,7 @@ var defaultValues = map[string]interface{}{
 	// IAM fetches the token from Vault.
 	"OKTA_TOKEN":             "",
 	"OKTA_URL":               "",
+	"OKTA_FILTER":            "type eq \"OKTA_GROUP\"",
 	"REDIS_HOST":             "localhost",
 	"REDIS_PORT":             "6379",
 	"REDIS_LOCK_RETRY_DELAY": "1s",

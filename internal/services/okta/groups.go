@@ -26,12 +26,11 @@ type oktaGroupProfile struct {
 	Description string
 }
 
-func (c *Client) fetchGroups(userID, since string) ([]Group, error) {
-	var filter string
-	if since != "" {
-		filter = "?filter=" + gourl.QueryEscape("lastMembershipUpdated gt \""+since+"\"")
+func (c *Client) joinOktaURLGroups(userID string, filters []string) (string, error) {
+	var joinedFilters string
+	if len(filters) != 0 {
+		joinedFilters = strings.Join([]string{"?filter=", gourl.QueryEscape(strings.Join(filters, " and "))}, "")
 	}
-
 	var url string
 	var err error
 	if userID != "" {
@@ -40,12 +39,31 @@ func (c *Client) fetchGroups(userID, since string) ([]Group, error) {
 		url, err = joinURL(c.oktaConfig.URL, "/groups/")
 	}
 	if err != nil {
+		return "", err
+	}
+	finURL := strings.Join([]string{url, joinedFilters}, "")
+	return finURL, err
+}
+
+func (c *Client) fetchGroups(userID, since string) ([]Group, error) {
+	filters := []string{}
+	if since != "" {
+		filters = append(filters, "lastMembershipUpdated gt \""+since+"\"")
+	}
+	if c.oktaConfig.Filter != "" {
+		filters = append(filters, c.oktaConfig.Filter)
+	}
+
+	var url string
+	var err error
+	url, err = c.joinOktaURLGroups(userID, filters)
+	if err != nil {
 		return nil, err
 	}
 
 	var allGroups []Group
 
-	responses, err := c.fetchPagedResource(url + filter)
+	responses, err := c.fetchPagedResource(url)
 	if err != nil {
 		return nil, err
 	}
