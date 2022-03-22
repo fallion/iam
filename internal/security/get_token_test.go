@@ -8,36 +8,42 @@ import (
 
 func TestGetToken(t *testing.T) {
 	tests := map[string]struct {
-		token  string
-		errors bool
+		headers  map[string]string
+		expToken string
+		errors   bool
 	}{
 		"Bearer token": {
-			token:  "token",
-			errors: false,
+			headers:  map[string]string{"Authorization": "Bearer token"},
+			expToken: "token",
+			errors:   false,
 		},
 		"token": {
-			token:  "",
-			errors: true,
+			headers:  map[string]string{"Authorization": "token"},
+			expToken: "",
+			errors:   true,
 		},
 		"Bearer Bearer token": {
-			token:  "Bearer token",
-			errors: false,
+			headers:  map[string]string{"Authorization": "Bearer Bearer token"},
+			expToken: "Bearer token",
+			errors:   false,
 		},
 		"Bearer": {
-			token:  "",
-			errors: false,
+			headers:  map[string]string{"Authorization": "Bearer"},
+			expToken: "",
+			errors:   false,
 		},
 		"unexpected Bearer token": {
-			token:  "",
-			errors: true,
+			headers:  map[string]string{"Authorization": "unexpected Bearer token"},
+			expToken: "",
+			errors:   true,
 		},
 	}
 
-	for test, result := range tests {
-		actual, err := GetToken(test)
-		assert.Equal(t, result.token, actual)
+	for _, test := range tests {
+		actual, err := GetToken(test.headers)
+		assert.Equal(t, test.expToken, actual)
 
-		if result.errors {
+		if test.errors {
 			assert.Error(t, err)
 		}
 	}
