@@ -12,5 +12,10 @@ func GetToken(headers map[string]string) (string, error) {
 	if len(token) == 2 && token[0] == "" {
 		return strings.TrimSpace(token[1]), nil
 	}
+
+	if headers["X-Goog-IAP-JWT-Assertion"] != "" {
+		return headers["X-Goog-IAP-JWT-Assertion"], nil
+	}
+
 	return "", errors.New("invalid auth scheme")
 }

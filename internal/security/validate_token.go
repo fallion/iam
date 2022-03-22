@@ -3,7 +3,7 @@ package security
 import (
 	"context"
 	"errors"
-	//"log"
+	"log"
 	"strings"
 	"time"
 
@@ -25,6 +25,7 @@ func VerifyToken(secretManager secrets.SecretManager, requestToken string) error
 		return errUnauthorised
 	}
 	//log.Println("Is a token")
+	log.Println(requestToken)
 
 	// check hardcoded
 	exists := secretManager.DoesTokenExist(requestToken)

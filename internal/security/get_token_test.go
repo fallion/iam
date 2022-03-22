@@ -37,6 +37,26 @@ func TestGetToken(t *testing.T) {
 			expToken: "",
 			errors:   true,
 		},
+		"basic X-Goog assertion": {
+			headers:  map[string]string{"X-Goog-IAP-JWT-Assertion": "assertion"},
+			expToken: "assertion",
+			errors:   false,
+		},
+		"empty X-Goog assertion": {
+			headers:  map[string]string{"X-Goog-IAP-JWT-Assertion": ""},
+			expToken: "",
+			errors:   true,
+		},
+		"no headers": {
+			headers:  map[string]string{},
+			expToken: "",
+			errors:   true,
+		},
+		"two headers": {
+			headers:  map[string]string{"X-Goog-IAP-JWT-Assertion": "assertion", "Authorization": "Bearer token"},
+			expToken: "token",
+			errors:   false,
+		},
 	}
 
 	for _, test := range tests {

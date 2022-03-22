@@ -34,9 +34,10 @@ func (s *Server) middlewareSecurity(h http.HandlerFunc) http.HandlerFunc {
 
 // checkAuth checks if user has proper token + user agent.s.
 func (s *Server) checkAuth(r *http.Request) error {
-	requestToken, err := security.GetToken(map[string]string{"Authorization": r.Header.Get("Authorization")})
+	requestToken, err := security.GetToken(map[string]string{"Authorization": r.Header.Get("Authorization"),
+		"X-Goog-IAP-JWT-Assertion": r.Header.Get("X-Goog-IAP-JWT-Assertion")})
 	if err != nil {
-		return api.Error{Message: "Use the Bearer {token} authorization scheme", Code: http.StatusUnauthorized}
+		return api.Error{Message: "Use the Bearer {token} authorization scheme or IAP X-Goog-IAP-JWT-Assertion", Code: http.StatusUnauthorized}
 	}
 	userAgent := r.Header.Get("User-Agent")
 
