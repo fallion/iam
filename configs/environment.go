@@ -85,7 +85,7 @@ type SentryConfig struct {
 type SecretsConfig struct {
 	Path              string   `mapstructure:"SECRETS_PATH"`
 	GoogleIDAllowlist []string `mapstructure:"GOOGLEID_ALLOWLIST"`
-	Audience          string   `mapstructure:"AUDIENCE"`
+	Audience          []string `mapstructure:"AUDIENCE"`
 }
 
 var defaultValues = map[string]interface{}{

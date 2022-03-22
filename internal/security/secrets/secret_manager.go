@@ -6,4 +6,5 @@ type SecretManager interface {
 	GetSetting(string) (string, error)
 	IsGoogleIDInList(string) bool
 	IsGitlabClaimInList(string) bool
+	GetAudiences() []string
 }

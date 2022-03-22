@@ -164,6 +164,37 @@ func TestJSONIsGitlabClaimInList(t *testing.T) {
 		assert.Equal(t, expected, fm.IsGitlabClaimInList(test))
 	}
 }
+func TestJSONgetAudiences(t *testing.T) {
+	tests := map[string]struct {
+		value        string
+		expAudiences []string
+	}{
+		"single audience": {
+			value:        `{"audiences": ["aud1"]}`,
+			expAudiences: []string{"aud1"},
+		},
+		"two audiences": {
+			value:        `{"audiences": ["aud1", "aud2"]}`,
+			expAudiences: []string{"aud1", "aud2"},
+		},
+		"no audiences": {
+			value:        `{}`,
+			expAudiences: []string{},
+		},
+	}
+	for _, test := range tests {
+		fileOne, err := StrToTempFile(test.value)
+		if err != nil {
+			panic(err)
+		}
+		defer os.Remove(fileOne)
+
+		fm, err := CreateNewJSONFileManager(fileOne)
+		fm.SyncSecrets()
+		assert.NoError(t, err)
+		assert.Equal(t, test.expAudiences, fm.GetAudiences())
+	}
+}
 func TestJSONGetSetting(t *testing.T) {
 	fileOne, err := StrToTempFile(`{"settings":{"label1":"setting1", "label2":"setting2"}}`)
 	if err != nil {

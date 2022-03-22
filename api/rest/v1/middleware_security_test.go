@@ -30,6 +30,10 @@ func (s *mockedSecretManager) IsGitlabClaimInList(_ string) bool {
 	return true
 }
 
+func (s *mockedSecretManager) GetAudiences() []string {
+	return []string{"aud"}
+}
+
 func createFakeManager() secrets.SecretManager {
 	return &mockedSecretManager{}
 }

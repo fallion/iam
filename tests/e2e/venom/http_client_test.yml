@@ -16,7 +16,7 @@ testcases:
         headers:
           User-Agent: "Venom/0 (Kiwi.com test)"
         assertions:
-          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme\n'"
+          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme or IAP X-Goog-IAP-JWT-Assertion\n'"
           - result.statuscode ShouldEqual 401
   - name: Test missing user agent
     steps:
@@ -123,7 +123,7 @@ testcases:
           User-Agent: "Venom/0 (Kiwi.com test)"
           authorization: "testtoken"
         assertions:
-          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme\n'"
+          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme or IAP X-Goog-IAP-JWT-Assertion\n'"
           - result.statuscode ShouldEqual 401
   - name: Test getting user with boocsek attributes
     steps:
