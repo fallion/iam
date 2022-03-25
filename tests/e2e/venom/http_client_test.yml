@@ -26,7 +26,7 @@ testcases:
         headers:
           authorization: "Bearer testtoken"
         assertions:
-          - "result.body ShouldEqual 'user agent string is not compliant with Kiwi RFC-22\n'"
+          - "result.body ShouldEqual 'user agent string is not compliant with Kiwi RFC-22: \"Go-http-client/1.1\"\n'"
           - result.statuscode ShouldEqual 401
   - name: Test getting missing user
     steps:
