@@ -25,7 +25,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/api v0.70.0
 	google.golang.org/appengine v1.6.7
-	google.golang.org/grpc v1.44.0
+	google.golang.org/grpc v1.45.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.22.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
