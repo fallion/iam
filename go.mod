@@ -12,13 +12,12 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/kiwicom/go-useragent v0.0.0-20220120120706-6aa7c2ce8611
 	github.com/lestrrat-go/jwx v1.2.20
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.18.1 // indirect
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/viper v1.6.2
+	github.com/spf13/viper v1.10.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tinylib/msgp v1.1.0 // indirect
@@ -27,5 +26,4 @@ require (
 	google.golang.org/appengine v1.6.7
 	google.golang.org/grpc v1.45.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.22.0
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
