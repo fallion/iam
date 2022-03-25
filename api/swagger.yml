@@ -2,7 +2,7 @@
 swagger: "2.0"
 schemes:
   - https
-basePath: "/v1"
+basePath: "/"
 
 info:
   description: Application for handling authorization rules in Kiwi
@@ -21,7 +21,7 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
-    description: "UUID token in a request header."
+    description: "Token, Google OIDC or Gitlab JWT, format `Authorization: Bearer <token>`"
   userAgent:
     type: apiKey
     in: header
@@ -43,6 +43,34 @@ definitions:
     description: Single user object
     type: object
     properties:
+      boocsek:
+        description: Boocsek attributes
+        type: object
+        properties:
+          channel:
+            type: string
+          kiwibaseId:
+            type: integer
+          position:
+            type: string
+          site: 
+            type: string
+          skills:
+            type: array
+            items:
+              type: string
+          staff:
+            type: string
+          state:
+            type: string
+          substate:
+            type: string
+          team: 
+            type: string
+          teamManager:
+            type: string
+          tier:
+            type: string
       employeeNumber:
         description: employeeNumber in Okta
         type: integer
@@ -56,7 +84,10 @@ definitions:
         description: SF_jobTitle in Okta
         type: string
       department:
-        description: department
+        description: department in Okta
+        type: string
+      email:
+        description: email address
         type: string
       location:
         description: SF_location in Okta
@@ -65,13 +96,18 @@ definitions:
         description: based on userType in Okta
         type: boolean
       orgStructure:
-        decription: SF_orgStructure in Okta
+        description: SF_orgStructure in Okta
         type: string
       manager:
         description: manager in Okta
         type: string
       permissions:
         description: Permissions from Kiwi IAM
+        type: array
+        items:
+          type: string
+      teamMembership:
+        description: Team membership in Okta
         type: array
         items:
           type: string
@@ -86,25 +122,6 @@ definitions:
       teamMembership: ["Engineering", "Engineering/CS Systems"]
       manager: Satan
       permissions: ["payment-cards:read", "comments:read", "comments:write"]
-  groups:
-    description: Okta groups
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        lastMembershipUpdated:
-          type: string
-      example:
-        id: 00asdfghjkl5LI4PB0h7
-        name: Android
-        description: ""
-        lastMembershipUpdated: "2019-02-27T14:04:23Z"
 
 security:
   - bearerAuth: []
@@ -132,8 +149,8 @@ paths:
           description: |
             Permissions for the defined service will be included in the response. 
             If missing, the user-agent is used to determine the service (backwards compatibility).
-          type: boolean
-          default: false
+          type: string 
+          default: 
       responses:
         200:
           description: User details
@@ -143,16 +160,12 @@ paths:
           description: User not found
           schema:
             $ref: "#/definitions/error"
-  /v1/groups:
+  /healtcheck:
     get:
-      summary: "Groups that the user belongs to"
-      description: "Get the groups that a given user belongs to in OKTA"
-      tags:
-        - Groups
-      produces:
-        - application/json
+      summary: "Health check"
+      description: "A simple healthcheck endpoint"
       responses:
         200:
-          description: All Okta groups
-          schema:
-            $ref: "#/definitions/groups"
+          description: Ok
+
+
