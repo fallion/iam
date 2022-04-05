@@ -21,5 +21,5 @@ require (
 	google.golang.org/api v0.74.0
 	google.golang.org/appengine v1.6.7
 	google.golang.org/grpc v1.45.0
-	gopkg.in/DataDog/dd-trace-go.v1 v1.37.0
+	gopkg.in/DataDog/dd-trace-go.v1 v1.37.1
 )
