@@ -11,12 +11,12 @@ require (
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/json-iterator/go v1.1.12
 	github.com/kiwicom/go-useragent v0.0.0-20220120120706-6aa7c2ce8611
-	github.com/lestrrat-go/jwx v1.2.20
+	github.com/lestrrat-go/jwx v1.2.21
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.18.1 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.10.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/api v0.74.0
 	google.golang.org/appengine v1.6.7
