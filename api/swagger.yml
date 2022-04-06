@@ -21,12 +21,12 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
-    description: "Token, Google OIDC or Gitlab JWT, format `Authorization: Bearer <token>`"
+    description: "Token, Google OIDC or Gitlab JWT, format `Authorization: Bearer <token>` - required for authentication."
   userAgent:
     type: apiKey
     in: header
     name: User-Agent
-    description: "User agent of your app in the format `Service/version (Kiwi.com environment)`"
+    description: "User agent of your app in the format `Service/version (Kiwi.com environment)` - required for authentication."
 
 definitions:
   error:
@@ -112,16 +112,30 @@ definitions:
         items:
           type: string
     example:
-      employeeNumber: 1
-      firstName: Simon
-      lastName: The tester
-      position: Website destroyer
-      department: Devops
-      location: Prague, Mordor
+      boocsek:
+        channel: ""
+        kiwibaseId: ""
+        position: ""
+        site: ""
+        skills: []
+        staff: "" 
+        state: ""
+        substate: ""
+        team: ""
+        teamManager: ""
+        tier: ""
+      department: Department/Section/Team
+      email: "employee@kiwi.com"
+      employeeNumber: 42069
+      firstName: Example
       isVendor: false
-      teamMembership: ["Engineering", "Engineering/CS Systems"]
-      manager: Satan
-      permissions: ["payment-cards:read", "comments:read", "comments:write"]
+      lastName: Employee 
+      location: Brno 
+      manager: Example Manager
+      orgStructure: Department/Section/Team
+      permissions: ["access", "edit"]
+      position: Engineering Manager
+      teamMembership: ["Department/Section/Team"]
 
 security:
   - bearerAuth: []
@@ -148,7 +162,8 @@ paths:
           required: false
           description: |
             Permissions for the defined service will be included in the response. 
-            If missing, the user-agent is used to determine the service (backwards compatibility).
+            These are group memberships of `iam-<service>.<permission>` Okta groups.
+            If missing, the user-agent is used to determine the service (backwards compatibility) - see the user-agent format.
           type: string 
           default: 
       responses:

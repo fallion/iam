@@ -123,4 +123,5 @@ var defaultValues = map[string]interface{}{
 	// https://github.com/spf13/viper/issues/380
 	"GITLABCLAIM_ALLOWLIST": "",
 	"AUDIENCE":              "",
+	"GITLAB_JWK_URL":        "",
 }
