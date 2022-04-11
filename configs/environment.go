@@ -56,8 +56,9 @@ type ServiceConfig struct {
 
 // OktaConfig stores configuration values for Okta client.
 type OktaConfig struct {
-	URL    string `mapstructure:"OKTA_URL"`
-	Filter string `mapstructure:"OKTA_GROUP_FILTER"`
+	URL           string        `mapstructure:"OKTA_URL"`
+	Filter        string        `mapstructure:"OKTA_GROUP_FILTER"`
+	CacheInterval time.Duration `mapstructure:"OKTA_CACHE_INTERVAL"`
 }
 
 // StorageConfig stores configuration values for storage client.
@@ -104,6 +105,7 @@ var defaultValues = map[string]interface{}{
 	"OKTA_TOKEN":             "",
 	"OKTA_URL":               "",
 	"OKTA_FILTER":            "type eq \"OKTA_GROUP\"",
+	"OKTA_CACHE_INTERVAL":    "4h",
 	"REDIS_HOST":             "localhost",
 	"REDIS_PORT":             "6379",
 	"REDIS_LOCK_RETRY_DELAY": "1s",

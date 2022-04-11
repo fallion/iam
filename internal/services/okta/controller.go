@@ -267,3 +267,8 @@ func oktaTimeFormat(t time.Time) string {
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
 }
+
+// a simple function to return cache interval from config
+func (c *Client) GetCacheInterval() time.Duration {
+	return c.oktaConfig.CacheInterval
+}

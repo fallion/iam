@@ -29,7 +29,8 @@ func syncOkta(client *okta.Client) {
 	client.SyncGroups()
 
 	// Run periodic task to fill in the cache
-	ticker := time.NewTicker(time.Minute * 10)
+	ticker := time.NewTicker(client.GetCacheInterval())
+	log.Println("Caching interval set to: ", client.GetCacheInterval())
 	defer ticker.Stop()
 
 	for tick := range ticker.C {
