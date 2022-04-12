@@ -3,6 +3,7 @@ package secrets
 import (
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 	//"fmt"
@@ -192,7 +193,9 @@ func TestJSONgetAudiences(t *testing.T) {
 		fm, err := CreateNewJSONFileManager(fileOne)
 		fm.SyncSecrets()
 		assert.NoError(t, err)
-		assert.Equal(t, test.expAudiences, fm.GetAudiences())
+		gotAudiences := fm.GetAudiences()
+		sort.Strings(gotAudiences)
+		assert.Equal(t, test.expAudiences, gotAudiences)
 	}
 }
 func TestJSONGetSetting(t *testing.T) {
