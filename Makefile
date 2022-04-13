@@ -3,7 +3,6 @@ GOLANGCI_LINT := $(shell command -v golangci-lint 2> /dev/null)
 install_deps:
 	go mod download
 	go install github.com/cespare/reflex@v0.3.0
-	go install github.com/golang/protobuf/protoc-gen-go@v1.4.3
 	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.26.1
 
 start:
@@ -63,9 +62,6 @@ else
 	@printf "${color_green}SENTRY_RELEASE: ${CI_COMMIT_SHORT_SHA}${color_off}\n"
 	@echo "SENTRY_RELEASE: ${CI_COMMIT_SHORT_SHA}" >> .env.yaml
 endif
-
-proto:
-	protoc --go_out=plugins=grpc:. ./api/grpc/v1/kiwi_iamapi.proto
 
 swagger-validate:
 	swagger validate ./api/swagger.yml

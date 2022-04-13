@@ -7,7 +7,6 @@ require (
 	github.com/certifi/gocertifi v0.0.0-20190905060710-a5e0173ced67 // indirect
 	github.com/getsentry/raven-go v0.2.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/json-iterator/go v1.1.12
 	github.com/kiwicom/go-useragent v0.0.0-20220120120706-6aa7c2ce8611
@@ -20,6 +19,5 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/api v0.74.0
 	google.golang.org/appengine v1.6.7
-	google.golang.org/grpc v1.45.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.37.1
 )

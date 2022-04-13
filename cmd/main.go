@@ -8,12 +8,7 @@ import (
 
 	"github.com/getsentry/raven-go"
 	_ "google.golang.org/appengine"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/reflection"
 
-	grpcAPI "github.com/kiwicom/iam/api/grpc"
-	pb "github.com/kiwicom/iam/api/grpc/v1"
 	restAPI "github.com/kiwicom/iam/api/rest/v1"
 	cfg "github.com/kiwicom/iam/configs"
 	"github.com/kiwicom/iam/internal/monitoring"
@@ -222,34 +217,8 @@ func main() {
 	}
 
 	log.Println("🚀 REST server starting on " + serveAddr)
-	go capturePanic(func() { _ = server.ListenAndServe() })
-
-	// GRPC Init
-
-	// Create listener
-	grpcAddress := net.JoinHostPort(address, iamConfig.GRPCPort)
-	lis, err := net.Listen("tcp", grpcAddress)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
 	}
 
-	s, _ := grpcAPI.CreateServer(oktaClient)
-
-	creds, err := credentials.NewServerTLSFromFile(iamConfig.GRPCCertFile, iamConfig.GRPCKeyFile)
-	if err != nil {
-		log.Println("TLS disabled on GRPC:", err)
-		raven.CaptureError(err, nil)
-	}
-
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(grpcAPI.UnarySecurityWrapper(secretManager)), grpc.Creds(creds))
-	reflection.Register(grpcServer)
-
-	pb.RegisterKiwiIAMAPIServer(grpcServer, s)
-
-	log.Printf("🚀 GRPC server listening on %s", grpcAddress)
-
-	// start the server
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %s", err)
-	}
 }
