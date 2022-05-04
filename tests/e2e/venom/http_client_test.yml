@@ -4,9 +4,36 @@ testcases:
     steps:
       - type: http
         method: GET
-        url: "http://{{.url}}:{{.httpPort}}/"
+        url: http://{{.url}}:{{.httpPort}}/
         assertions:
           - result.body ShouldEqual 42
+          - result.statuscode ShouldEqual 200
+  - name: SyncStatus 
+    steps:
+      - type: http
+        method: GET
+        url: "http://{{.url}}:{{.httpPort}}/v1/cache/status"
+        headers:
+          User-Agent: "whatever/0 (Kiwi.com test)"
+          authorization: "Bearer testtoken"
+        assertions:
+          - result.statuscode ShouldEqual 200
+          - result.bodyjson ShouldContainKey msg
+          - result.bodyjson.msg ShouldContainSubstring "Last cache sync at:"
+        vars:
+          oldmsg:
+            from: result.bodyjson.msg
+            regex: (.*)
+  - name: Test that server responds to forced sync
+    steps:
+      - type: http
+        method: GET
+        url: "http://{{.url}}:{{.httpPort}}/v1/cache/sync"
+        headers:
+          User-Agent: "whatever/0 (Kiwi.com test)"
+          authorization: "Bearer testtoken"
+        assertions:
+          - result.bodyjson.msg ShouldEqual "Manual cache sync started."
           - result.statuscode ShouldEqual 200
   - name: Test rejection if authentication header is missing
     steps:
@@ -16,7 +43,7 @@ testcases:
         headers:
           User-Agent: "Venom/0 (Kiwi.com test)"
         assertions:
-          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme\n'"
+          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme or IAP X-Goog-IAP-JWT-Assertion\n'"
           - result.statuscode ShouldEqual 401
   - name: Test missing user agent
     steps:
@@ -26,7 +53,7 @@ testcases:
         headers:
           authorization: "Bearer testtoken"
         assertions:
-          - "result.body ShouldEqual 'user agent string is not compliant with Kiwi RFC-22\n'"
+          - "result.body ShouldEqual 'user agent string is not compliant with Kiwi RFC-22: \"Go-http-client/1.1\"\n'"
           - result.statuscode ShouldEqual 401
   - name: Test getting missing user
     steps:
@@ -123,7 +150,7 @@ testcases:
           User-Agent: "Venom/0 (Kiwi.com test)"
           authorization: "testtoken"
         assertions:
-          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme\n'"
+          - "result.body ShouldEqual 'Use the Bearer {token} authorization scheme or IAP X-Goog-IAP-JWT-Assertion\n'"
           - result.statuscode ShouldEqual 401
   - name: Test getting user with boocsek attributes
     steps:
@@ -173,3 +200,16 @@ testcases:
           - result.bodyjson.isvendor ShouldBeFalse
           - result.bodyjson ShouldContainKey permissions
           - result.statuscode ShouldEqual 200
+  - name: Test that server responds to forced sync
+    steps:
+      - type: http
+        method: GET
+        url: "http://{{.url}}:{{.httpPort}}/v1/cache/status"
+        headers:
+          User-Agent: "whatever/0 (Kiwi.com test)"
+          authorization: "Bearer testtoken"
+        assertions:
+          - result.statuscode ShouldEqual 200
+          - result.bodyjson ShouldContainKey msg
+          - result.bodyjson.msg ShouldContainSubstring "Last cache sync at:"
+          - result.bodyjson.msg ShouldNotContainSubstring "{{.SyncStatus.oldmsg}}"

@@ -15,7 +15,6 @@ import (
 )
 
 var errUnauthorised = errors.New("incorrect token")
-var audienceVar = "AUDIENCE" // this fails hard without audience
 var gitlabJWKVar = "GITLAB_JWK_URL"
 
 // VerifyToken accepts a token and a service struct and verifies if this token is accepted.
@@ -25,6 +24,7 @@ func VerifyToken(secretManager secrets.SecretManager, requestToken string) error
 		return errUnauthorised
 	}
 	//log.Println("Is a token")
+	//log.Println(requestToken)
 
 	// check hardcoded
 	exists := secretManager.DoesTokenExist(requestToken)
@@ -36,20 +36,24 @@ func VerifyToken(secretManager secrets.SecretManager, requestToken string) error
 
 	// try to validate as JWT
 	// try to validate as google IDToken (lib by google, expecting great support in time)
-	payload, err := idtoken.Validate(context.Background(), requestToken, viper.GetString(audienceVar))
-	if err == nil { // token is valid
-		// check whether the address is allowed
-		if str, ok := payload.Claims["email"].(string); ok {
-			if secretManager.IsGoogleIDInList(str) {
-				// log.Println("Valid JWT")
-				return nil
+
+	audiences := secretManager.GetAudiences()
+	for i := range audiences {
+		payload, err := idtoken.Validate(context.Background(), requestToken, audiences[i])
+		if err == nil { // token is valid
+			// check whether the address is allowed
+			if str, ok := payload.Claims["email"].(string); ok {
+				if secretManager.IsGoogleIDInList(str) {
+					// log.Println("Valid JWT")
+					return nil
+				}
 			}
+			//else the email is missing, so the token is broken, so we do nothing.
 		}
-		//else the email is missing, so the token is broken, so we do nothing.
 	}
 	//log.Println("Not a google ID JWT")
 	// try to validate as gitlab-signed JWT
-	err = ValidateGitlabToken(requestToken, secretManager)
+	err := ValidateGitlabToken(requestToken, secretManager)
 	//log.Println("Valid Gitlab")
 	return err
 }

@@ -46,9 +46,6 @@ func LoadConfigs(configStructs ...interface{}) error {
 // ServiceConfig stores configuration values for the IAM service.
 type ServiceConfig struct {
 	Port         string `mapstructure:"PORT"`
-	GRPCPort     string `mapstructure:"GRPC_PORT"`
-	GRPCCertFile string `mapstructure:"GRPC_CERT_FILE"`
-	GRPCKeyFile  string `mapstructure:"GRPC_KEY_FILE"`
 	UseLocalhost bool   `mapstructure:"USE_LOCALHOST"`
 	Environment  string `mapstructure:"APP_ENV"`
 	Release      string `mapstructure:"SENTRY_RELEASE"`
@@ -56,8 +53,9 @@ type ServiceConfig struct {
 
 // OktaConfig stores configuration values for Okta client.
 type OktaConfig struct {
-	URL    string `mapstructure:"OKTA_URL"`
-	Filter string `mapstructure:"OKTA_GROUP_FILTER"`
+	URL           string        `mapstructure:"OKTA_URL"`
+	Filter        string        `mapstructure:"OKTA_GROUP_FILTER"`
+	CacheInterval time.Duration `mapstructure:"OKTA_CACHE_INTERVAL"`
 }
 
 // StorageConfig stores configuration values for storage client.
@@ -85,16 +83,12 @@ type SentryConfig struct {
 type SecretsConfig struct {
 	Path              string   `mapstructure:"SECRETS_PATH"`
 	GoogleIDAllowlist []string `mapstructure:"GOOGLEID_ALLOWLIST"`
-	Audience          string   `mapstructure:"AUDIENCE"`
+	Audience          []string `mapstructure:"AUDIENCE"`
 }
 
 var defaultValues = map[string]interface{}{
-	"PORT":      "8080",
-	"GRPC_PORT": "8090",
-	// TLS certificates used only for GRPC (HTTP is taken care by Nginx).
-	"GRPC_CERT_FILE": "",
-	"GRPC_KEY_FILE":  "",
-	"SERVE_PATH":     "/",
+	"PORT":       "8080",
+	"SERVE_PATH": "/",
 	// Environment used for sentry, user agent, datadog. Removes user syncing if set to dev.
 	"APP_ENV": "",
 	// Uses localhost instead of 0.0.0.0, useful for OSX.
@@ -103,7 +97,8 @@ var defaultValues = map[string]interface{}{
 	// IAM fetches the token from Vault.
 	"OKTA_TOKEN":             "",
 	"OKTA_URL":               "",
-	"OKTA_FILTER":            "type eq \"OKTA_GROUP\"",
+	"OKTA_GROUP_FILTER":      "type eq \"OKTA_GROUP\"",
+	"OKTA_CACHE_INTERVAL":    "4h",
 	"REDIS_HOST":             "localhost",
 	"REDIS_PORT":             "6379",
 	"REDIS_LOCK_RETRY_DELAY": "1s",
@@ -123,4 +118,5 @@ var defaultValues = map[string]interface{}{
 	// https://github.com/spf13/viper/issues/380
 	"GITLABCLAIM_ALLOWLIST": "",
 	"AUDIENCE":              "",
+	"GITLAB_JWK_URL":        "",
 }

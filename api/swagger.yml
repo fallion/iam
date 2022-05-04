@@ -2,7 +2,7 @@
 swagger: "2.0"
 schemes:
   - https
-basePath: "/v1"
+basePath: "/"
 
 info:
   description: Application for handling authorization rules in Kiwi
@@ -21,12 +21,12 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
-    description: "UUID token in a request header."
+    description: "Token, Google OIDC or Gitlab JWT, format `Authorization: Bearer <token>` - required for authentication."
   userAgent:
     type: apiKey
     in: header
     name: User-Agent
-    description: "User agent of your app in the format `Service/version (Kiwi.com environment)`"
+    description: "User agent of your app in the format `Service/version (Kiwi.com environment)` - required for authentication."
 
 definitions:
   error:
@@ -39,10 +39,52 @@ definitions:
         format: int64
       message:
         type: string
+  lastsync:
+    type: object
+    properties:
+      msg:
+        type: string
+    example:
+      msg: "Last cache sync at: 1-01-01T00:00:00.0Z" 
+  startsync:
+    type: object
+    properties:
+      msg:
+        type: string
+    example:
+      msg: "Manual cache sync started."
   user:
     description: Single user object
     type: object
     properties:
+      boocsek:
+        description: Boocsek attributes
+        type: object
+        properties:
+          channel:
+            type: string
+          kiwibaseId:
+            type: integer
+          position:
+            type: string
+          site: 
+            type: string
+          skills:
+            type: array
+            items:
+              type: string
+          staff:
+            type: string
+          state:
+            type: string
+          substate:
+            type: string
+          team: 
+            type: string
+          teamManager:
+            type: string
+          tier:
+            type: string
       employeeNumber:
         description: employeeNumber in Okta
         type: integer
@@ -56,7 +98,10 @@ definitions:
         description: SF_jobTitle in Okta
         type: string
       department:
-        description: department
+        description: department in Okta
+        type: string
+      email:
+        description: email address
         type: string
       location:
         description: SF_location in Okta
@@ -65,7 +110,7 @@ definitions:
         description: based on userType in Okta
         type: boolean
       orgStructure:
-        decription: SF_orgStructure in Okta
+        description: SF_orgStructure in Okta
         type: string
       manager:
         description: manager in Okta
@@ -75,36 +120,36 @@ definitions:
         type: array
         items:
           type: string
+      teamMembership:
+        description: Team membership in Okta
+        type: array
+        items:
+          type: string
     example:
-      employeeNumber: 1
-      firstName: Simon
-      lastName: The tester
-      position: Website destroyer
-      department: Devops
-      location: Prague, Mordor
+      boocsek:
+        channel: ""
+        kiwibaseId: ""
+        position: ""
+        site: ""
+        skills: []
+        staff: "" 
+        state: ""
+        substate: ""
+        team: ""
+        teamManager: ""
+        tier: ""
+      department: Department/Section/Team
+      email: "employee@kiwi.com"
+      employeeNumber: 42069
+      firstName: Example
       isVendor: false
-      teamMembership: ["Engineering", "Engineering/CS Systems"]
-      manager: Satan
-      permissions: ["payment-cards:read", "comments:read", "comments:write"]
-  groups:
-    description: Okta groups
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        lastMembershipUpdated:
-          type: string
-      example:
-        id: 00asdfghjkl5LI4PB0h7
-        name: Android
-        description: ""
-        lastMembershipUpdated: "2019-02-27T14:04:23Z"
+      lastName: Employee 
+      location: Brno 
+      manager: Example Manager
+      orgStructure: Department/Section/Team
+      permissions: ["access", "edit"]
+      position: Engineering Manager
+      teamMembership: ["Department/Section/Team"]
 
 security:
   - bearerAuth: []
@@ -131,9 +176,10 @@ paths:
           required: false
           description: |
             Permissions for the defined service will be included in the response. 
-            If missing, the user-agent is used to determine the service (backwards compatibility).
-          type: boolean
-          default: false
+            These are group memberships of `iam-<service>.<permission>` Okta groups.
+            If missing, the user-agent is used to determine the service (backwards compatibility) - see the user-agent format.
+          type: string 
+          default: 
       responses:
         200:
           description: User details
@@ -143,16 +189,32 @@ paths:
           description: User not found
           schema:
             $ref: "#/definitions/error"
-  /v1/groups:
+  /v1/cache/status:
     get:
-      summary: "Groups that the user belongs to"
-      description: "Get the groups that a given user belongs to in OKTA"
-      tags:
-        - Groups
+      summary: "Timestamp of the last successful data cache sync"
+      description: "Timestamp of the last successful data cache sync"
       produces:
         - application/json
       responses:
         200:
-          description: All Okta groups
           schema:
-            $ref: "#/definitions/groups"
+            $ref: "#/definitions/lastsync"
+  /v1/cache/sync:
+    get:
+      summary: "Force sync okta data cache"
+      description: "Starts a sync of okta data"
+      produces:
+        - application/json
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/startsync"
+  /healtcheck:
+    get:
+      summary: "Health check"
+      description: "A simple healthcheck endpoint"
+      responses:
+        200:
+          description: Ok
+
+

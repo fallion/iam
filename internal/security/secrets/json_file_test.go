@@ -3,6 +3,7 @@ package secrets
 import (
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 	//"fmt"
@@ -162,6 +163,39 @@ func TestJSONIsGitlabClaimInList(t *testing.T) {
 	assert.NoError(t, err)
 	for test, expected := range tests {
 		assert.Equal(t, expected, fm.IsGitlabClaimInList(test))
+	}
+}
+func TestJSONgetAudiences(t *testing.T) {
+	tests := map[string]struct {
+		value        string
+		expAudiences []string
+	}{
+		"single audience": {
+			value:        `{"audiences": ["aud1"]}`,
+			expAudiences: []string{"aud1"},
+		},
+		"two audiences": {
+			value:        `{"audiences": ["aud1", "aud2"]}`,
+			expAudiences: []string{"aud1", "aud2"},
+		},
+		"no audiences": {
+			value:        `{}`,
+			expAudiences: []string{},
+		},
+	}
+	for _, test := range tests {
+		fileOne, err := StrToTempFile(test.value)
+		if err != nil {
+			panic(err)
+		}
+		defer os.Remove(fileOne)
+
+		fm, err := CreateNewJSONFileManager(fileOne)
+		fm.SyncSecrets()
+		assert.NoError(t, err)
+		gotAudiences := fm.GetAudiences()
+		sort.Strings(gotAudiences)
+		assert.Equal(t, test.expAudiences, gotAudiences)
 	}
 }
 func TestJSONGetSetting(t *testing.T) {

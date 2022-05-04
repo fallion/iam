@@ -10,10 +10,10 @@ RUN apk add --no-cache \
     zstd~=1.3.8 \
     lz4~=1.8.3
 
-RUN curl -sSL https://github.com/ovh/venom/releases/download/v0.26.0/venom.linux-amd64 -o /usr/local/bin/venom
+RUN curl -sSL https://github.com/ovh/venom/releases/download/v1.0.1/venom.linux-amd64 -o /usr/local/bin/venom
 RUN chmod u+x /usr/local/bin/venom
 
 COPY . /venom
 WORKDIR /venom
 
-CMD ["venom", "run", "--var-from-file", "variables.yml", "--parallel", "5", "--format=xml", "--output-dir", "."]
+CMD ["venom", "run", "--var-from-file", "variables.yml", "--format=xml", "--output-dir", "."]

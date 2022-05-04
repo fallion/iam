@@ -210,7 +210,7 @@ func (c *Client) SyncGroups() {
 	defer c.lock.Delete("sync_groups")
 	syncStart := time.Now().UTC()
 
-	groups, err := c.fetchGroups("", c.getLastSyncTime())
+	groups, err := c.fetchGroups("", c.GetLastSyncTime())
 	if err != nil {
 		log.Println("Error fetching groups", err)
 		c.metrics.Incr("okta_sync", monitoring.Tag("type", "groups"), monitoring.Tag("status", "error"))
@@ -250,7 +250,8 @@ func (c *Client) SyncGroups() {
 	c.metrics.Incr("okta_sync", monitoring.Tag("type", "groups"), monitoring.Tag("status", "ok"))
 }
 
-func (c *Client) getLastSyncTime() string {
+// func GetLastSyncTime looks into cache for a timestamp
+func (c *Client) GetLastSyncTime() string {
 	timestamp := time.Time{}
 	if err := c.cache.Get("groups-sync-timestamp", &timestamp); err != nil {
 		if err != storage.ErrNotFound {
@@ -266,4 +267,9 @@ func oktaTimeFormat(t time.Time) string {
 	return fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d.0Z",
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
+}
+
+// a simple function to return cache interval from config
+func (c *Client) GetCacheInterval() time.Duration {
+	return c.oktaConfig.CacheInterval
 }

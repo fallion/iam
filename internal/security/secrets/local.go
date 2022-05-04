@@ -33,6 +33,13 @@ func (s LocalSecretManager) IsGoogleIDInList(email string) bool {
 	return false
 }
 
+// GetAudiences returns a list of configured audiences
+func (s LocalSecretManager) GetAudiences() []string {
+	googleAudienceListVar := "AUDIENCE"
+	googleAudienceList := viper.GetStringSlice(googleAudienceListVar)
+	return googleAudienceList
+}
+
 // IsGitlabClaimInList checks for a presence of tuple of proj_id/branch in the allowlist
 func (s LocalSecretManager) IsGitlabClaimInList(claim string) bool {
 	gitlabAllowlistVar := "GITLABCLAIM_ALLOWLIST"

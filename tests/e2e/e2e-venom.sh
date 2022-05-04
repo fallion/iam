@@ -16,7 +16,7 @@ docker-compose build venom
 VENOM_CONTAINER_NAME="venom-container-$(date +%s)"
 docker-compose run -d --name $VENOM_CONTAINER_NAME venom tail -f /dev/null
 
-docker exec $VENOM_CONTAINER_NAME venom run --var-from-file variables.yml --parallel 5 --format=xml --output-dir="." --strict
+docker exec $VENOM_CONTAINER_NAME venom run --var-from-file variables.yml --format=xml --output-dir="."
 
 docker exec  $VENOM_CONTAINER_NAME cat test_results.xml > test_results.xml
 docker-compose rm --force --stop -v venom || true
