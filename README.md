@@ -120,7 +120,7 @@ Kiwi-IAM needs a connection to an Okta instance - you can provide it via an URL 
 To parse groups into permissions Kiwi-IAM searches for groups that match `^iam-[\w-]+\.([\w-]+\.?)+$` regular expression (i.e. `iam-foo.bar`). 
 For any member of the Okta group `iam-foo.bar`, Kiwi-iam returns `bar` permission for application `foo`.
 
-It is also possible to configure the caching interval to comply with Okta rate limit via the `OKTA_CACHE_INTERVAL` variable (expects a `time.Duration` value, default `4h`).
+It is also possible to configure the caching interval to comply with Okta rate limit via the `OKTA_CACHE_INTERVAL` variable (expects a `time.Duration` value, default `4h`). To force a sync, use `/v1/cache/sync` endpoint, to check last sync time use `/v1/cache/status` endpoint.
 
 ### Datadog (optional)
 

@@ -16,6 +16,8 @@ func (s *Server) routes() {
 	s.Router.HandleFunc("/", s.handleHello())
 	s.Router.HandleFunc("/healthcheck", s.handleHealthcheck())
 	s.Router.HandleFunc("/v1/user", s.middlewareSecurity(s.handleUserGET()))
+	s.Router.HandleFunc("/v1/cache/sync", s.middlewareSecurity(s.handleCacheSyncGET()))
+	s.Router.HandleFunc("/v1/cache/status", s.middlewareSecurity(s.handleCacheStatusGET()))
 
 	s.Router.PathPrefix("/" + wellKnownFolder + "/").Handler(DisableDirectoryListingHandler(
 		http.StripPrefix("/"+wellKnownFolder+"/", http.FileServer(http.Dir(wellKnownFolder))),

@@ -39,6 +39,20 @@ definitions:
         format: int64
       message:
         type: string
+  lastsync:
+    type: object
+    properties:
+      msg:
+        type: string
+    example:
+      msg: "Last cache sync at: 1-01-01T00:00:00.0Z" 
+  startsync:
+    type: object
+    properties:
+      msg:
+        type: string
+    example:
+      msg: "Manual cache sync started."
   user:
     description: Single user object
     type: object
@@ -175,6 +189,26 @@ paths:
           description: User not found
           schema:
             $ref: "#/definitions/error"
+  /v1/cache/status:
+    get:
+      summary: "Timestamp of the last successful data cache sync"
+      description: "Timestamp of the last successful data cache sync"
+      produces:
+        - application/json
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/lastsync"
+  /v1/cache/sync:
+    get:
+      summary: "Force sync okta data cache"
+      description: "Starts a sync of okta data"
+      produces:
+        - application/json
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/startsync"
   /healtcheck:
     get:
       summary: "Health check"

@@ -27,3 +27,15 @@ func (o *mockOktaService) GetGroups() ([]okta.Group, error) {
 
 	return argsToReturn.Get(0).([]okta.Group), argsToReturn.Error(1)
 }
+
+func (o *mockOktaService) SyncUsers() {
+	return
+}
+
+func (o *mockOktaService) SyncGroups() {
+	return
+}
+
+func (o *mockOktaService) GetLastSyncTime() string {
+	return "1-01-01T00:00:00.0Z"
+}

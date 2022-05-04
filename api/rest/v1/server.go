@@ -17,6 +17,9 @@ type oktaService interface {
 	AddPermissions(*okta.User, string) error
 	GetUser(string) (okta.User, error)
 	GetGroups() ([]okta.Group, error)
+	SyncUsers()
+	SyncGroups()
+	GetLastSyncTime() string
 }
 
 type metricService interface {
