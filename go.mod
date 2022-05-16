@@ -9,11 +9,10 @@ require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.7.3 // indirect
-	github.com/json-iterator/go v1.1.10
+	github.com/json-iterator/go v1.1.12
 	github.com/kiwicom/go-useragent v0.0.0-20200315101851-ba2a7d39e4db
 	github.com/lestrrat-go/jwx v1.2.20
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.10.2 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
