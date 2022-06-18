@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/json-iterator/go v1.1.10
 	github.com/kiwicom/go-useragent v0.0.0-20200315101851-ba2a7d39e4db
-	github.com/lestrrat-go/jwx v1.2.20
+	github.com/lestrrat-go/jwx v1.2.25
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onsi/ginkgo v1.10.2 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tinylib/msgp v1.1.0 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	google.golang.org/api v0.70.0
