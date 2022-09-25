@@ -23,7 +23,7 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tinylib/msgp v1.1.0 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7
 	google.golang.org/api v0.70.0
 	google.golang.org/appengine v1.6.7
 	google.golang.org/grpc v1.44.0
