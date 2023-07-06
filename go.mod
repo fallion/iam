@@ -20,13 +20,12 @@ require (
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.6.2
-	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.1
 	github.com/tinylib/msgp v1.1.0 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	google.golang.org/api v0.70.0
+	golang.org/x/sync v0.1.0
+	google.golang.org/api v0.103.0
 	google.golang.org/appengine v1.6.7
-	google.golang.org/grpc v1.44.0
+	google.golang.org/grpc v1.53.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.22.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
